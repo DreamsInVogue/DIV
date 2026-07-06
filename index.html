@@ -8,6 +8,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDyOK9NqloQbJrfB-VFLOaK2aZdFd09AdQ",
+  authDomain: "dreams-in-vogue.firebaseapp.com",
+  projectId: "dreams-in-vogue",
+  storageBucket: "dreams-in-vogue.firebasestorage.app",
+  messagingSenderId: "704300365349",
+  appId: "1:704300365349:web:fec5500c119b4033bab1cc",
+  measurementId: "G-0LVRKBH6B7"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+</script>
 <style>
   :root{
     --ivory:#FBF6EC;
@@ -762,19 +779,30 @@ const defaultProducts = [
 let products = [];
 let requests = [];
 
-function loadState(){
+async function loadState(){
   try{
-    const stored = localStorage.getItem('div_products');
-    products = stored ? JSON.parse(stored) : defaultProducts.slice();
-    if(!stored){ localStorage.setItem('div_products', JSON.stringify(products)); }
-  }catch(e){ products = defaultProducts.slice(); }
+    const snap = await db.collection('products').orderBy('createdAt','desc').get();
+    if(snap.empty){
+      for(const p of defaultProducts){
+        await db.collection('products').doc(p.id).set({...p, createdAt: Date.now()});
+      }
+      products = defaultProducts.slice();
+    } else {
+      products = snap.docs.map(d=>d.data());
+    }
+  }catch(e){
+    console.error('Failed to load products from Firebase', e);
+    products = defaultProducts.slice();
+  }
+
   try{
-    const storedReq = localStorage.getItem('div_requests');
-    requests = storedReq ? JSON.parse(storedReq) : [];
-  }catch(e){ requests = []; }
+    const reqSnap = await db.collection('requests').orderBy('createdAt','desc').get();
+    requests = reqSnap.docs.map(d=>d.data());
+  }catch(e){
+    console.error('Failed to load requests from Firebase', e);
+    requests = [];
+  }
 }
-function saveProducts(){ localStorage.setItem('div_products', JSON.stringify(products)); }
-function saveRequests(){ localStorage.setItem('div_requests', JSON.stringify(requests)); }
 
 /* ===================== RENDER SHOP ===================== */
 function renderShop(){
