@@ -920,7 +920,8 @@ function submitCustomOrder(){
     time: new Date().toLocaleString('en-IN')
   };
   requests.unshift(entry);
-  saveRequests();
+  // Save directly to Firebase Firestore
+  db.collection('requests').doc(entry.id).set({...entry, createdAt: Date.now()});
   renderRequests();
 
   const waMsg = encodeURIComponent(`Hi Dreams In Vogue! I'd like to place a custom order.\nName: ${name}\nCategory: ${category}\nDetails: ${details}`);
@@ -1017,7 +1018,8 @@ function saveProduct(){
     images: pendingImages.slice()
   };
   products.unshift(product);
-  saveProducts();
+  // Save directly to Firebase Firestore
+  db.collection('products').doc(product.id).set({...product, createdAt: Date.now()});
   renderShop();
   renderInventory();
   resetProductForm();
@@ -1062,7 +1064,8 @@ function renderInventory(){
 }
 function deleteProduct(id){
   products = products.filter(p=>p.id!==id);
-  saveProducts();
+  // Delete directly from Firebase Firestore
+  db.collection('products').doc(id).delete();
   renderShop();
   renderInventory();
   showToast("Dress removed.");
@@ -1093,7 +1096,8 @@ function renderRequests(){
 }
 function deleteRequest(id){
   requests = requests.filter(r=>r.id!==id);
-  saveRequests();
+  // Delete directly from Firebase Firestore
+  db.collection('requests').doc(id).delete();
   renderRequests();
 }
 
