@@ -405,7 +405,7 @@
       <a href="#fullcustom">Full Custom</a>
     </nav>
     <div class="nav-cta">
-      <a class="icon-btn" href="https://ig.me/m/_dreamsinvogue_" target="_blank" aria-label="Instagram">
+      <a class="icon-btn" href="https://ig.me/m/_dreamsinvogue_" aria-label="Instagram">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="#C13584"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56-.79.31-1.46.72-2.13 1.38A5.87 5.87 0 0 0 .63 4.14c-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13.66.66 1.34 1.07 2.13 1.38.76.3 1.63.5 2.91.56 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.13-1.38.66-.66 1.07-1.34 1.38-2.13.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91a5.87 5.87 0 0 0-1.38-2.13A5.87 5.87 0 0 0 16.86.63c-.76-.3-1.63-.5-2.91-.56C12.67.01 12.26 0 9 0h3ZM12 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84Zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.85-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></svg>
       </a>
       <a class="icon-btn" href="https://wa.me/919188442698" target="_blank" aria-label="WhatsApp">
@@ -526,13 +526,17 @@
 
     <div id="adminGate" class="lock-screen">
       <p class="eyebrow" style="text-align:center;">Owner access</p>
-      <h2 style="color:#EDE4D2;margin-top:0;">Enter password</h2>
+      <h2 style="color:#EDE4D2;margin-top:0;">Sign in</h2>
       <div class="field">
-        <label>Admin password</label>
+        <label>Email</label>
+        <input type="email" id="adminEmailInput" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
         <input type="password" id="adminPassInput" placeholder="Enter password">
       </div>
       <button class="btn gold" style="width:100%;justify-content:center;" data-action="tryAdminLogin">Unlock dashboard</button>
-      <p style="font-size:.75rem;color:#8A8071;margin-top:16px;">Default password: <code>keerthy2026</code> — change it in the code before sharing your site.</p>
+      <p style="font-size:.75rem;color:#8A8071;margin-top:16px;">Sign in with the email and password you created in Firebase Authentication.</p>
     </div>
 
     <div id="adminDashboard">
@@ -612,7 +616,7 @@
               <label>Photos</label>
               <div class="img-upload-box" id="uploadBox">
                 <input type="file" id="pImages" accept="image/*" multiple>
-                <span>Click to choose photos, or drag them here</span>
+                <span>Click to choose photos (up to 3), or drag them here</span>
               </div>
               <div class="preview-strip" id="previewStrip"></div>
             </div>
@@ -670,7 +674,7 @@
         <h4>Get in touch</h4>
         <ul>
           <li><a href="https://wa.me/919188442698" target="_blank">Chat on WhatsApp</a></li>
-          <li><a href="https://ig.me/m/_dreamsinvogue_" target="_blank">Message us on Instagram</a></li>
+          <li><a href="https://ig.me/m/_dreamsinvogue_">Message us on Instagram</a></li>
           <li><a href="#" data-action="openCustomModal">Book a custom order</a></li>
         </ul>
       </div>
@@ -683,7 +687,7 @@
 
 <!-- ================= FLOATING CONTACT STACK ================= -->
 <div class="float-stack">
-  <a class="float-btn float-ig" href="https://ig.me/m/_dreamsinvogue_" target="_blank" aria-label="Message us on Instagram">
+  <a class="float-btn float-ig" href="https://ig.me/m/_dreamsinvogue_" aria-label="Message us on Instagram">
     <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56-.79.31-1.46.72-2.13 1.38A5.87 5.87 0 0 0 .63 4.14c-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13.66.66 1.34 1.07 2.13 1.38.76.3 1.63.5 2.91.56 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.13-1.38.66-.66 1.07-1.34 1.38-2.13.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91a5.87 5.87 0 0 0-1.38-2.13A5.87 5.87 0 0 0 16.86.63c-.76-.3-1.63-.5-2.91-.56C12.67.01 12.26 0 9 0h3ZM12 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84Zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.85-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></svg>
   </a>
   <a class="float-btn float-wa" href="https://wa.me/919188442698" target="_blank" aria-label="Chat on WhatsApp">
@@ -725,10 +729,35 @@
 
 <div id="toast"></div>
 
-<script>
+<script type="module">
+/* ===================== FIREBASE SETUP ===================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc,
+  query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDyOK9NqloQbJrfB-VFLOaK2aZdFd09AdQ",
+  authDomain: "dreams-in-vogue.firebaseapp.com",
+  projectId: "dreams-in-vogue",
+  storageBucket: "dreams-in-vogue.firebasestorage.app",
+  messagingSenderId: "704300365349",
+  appId: "1:704300365349:web:fec5500c119b4033bab1cc",
+  measurementId: "G-0LVRKBH6B7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const productsCol = collection(db, 'products');
+const requestsCol = collection(db, 'requests');
+
 /* ===================== CONFIG ===================== */
 const WHATSAPP_NUMBER = "919188442698";
-const ADMIN_PASSWORD = "keerthy2026";
 const INSTAGRAM_SAREES = "_dreamsinvoguedrapes_";
 const INSTAGRAM_OTHERS = "_dreamsinvogue_";
 function instagramFor(category){
@@ -746,35 +775,32 @@ const catIcon = {
 const catThumbClass = {maternity:'mat',sarees:'sar',aari:'aar',blouses:'blo',fullcustom:'cus'};
 const catDisplayName = {maternity:'Maternity Wear',sarees:'Saree Collection',aari:'Aari Work',blouses:'Custom Blouses',fullcustom:'Full Custom'};
 
-/* ===================== DEFAULT SAMPLE PRODUCTS ===================== */
-const defaultProducts = [
-  {id:"p1",name:"Blush Bloom Maternity Gown",category:"maternity",price:1899,mrp:2399,fabric:"Soft crepe, flared silhouette",sizes:["Free size","Made to measure"],colours:"Blush pink, Sage green",description:"A flowy floor-length gown perfect for maternity photoshoots, with an empire waist for comfort through every trimester.",status:"Available",images:[]},
-  {id:"p2",name:"Ivory Comfort Maternity Kurta Set",category:"maternity",price:1299,mrp:null,fabric:"Cotton blend, breathable",sizes:["M","L","XL"],colours:"Ivory, Dusty blue",description:"Everyday maternity wear with a nursing-friendly wrap design and side pockets.",status:"Available",images:[]},
-  {id:"p3",name:"Classic Gold Kasavu Saree",category:"sarees",price:2499,mrp:2999,fabric:"Handloom cotton, gold zari border",sizes:["Free size"],colours:"Ivory with gold border",description:"The timeless Kerala kasavu — handwoven cotton with a traditional gold zari border, perfect for Onam and temple visits.",status:"Available",images:[]},
-  {id:"p4",name:"Emerald Kanjivaram Silk Saree",category:"sarees",price:5499,mrp:6499,fabric:"Pure Kanjivaram silk",sizes:["Free size"],colours:"Emerald green with gold zari",description:"Rich silk saree with a temple border, ideal for weddings and festive occasions.",status:"Made to Order",images:[]},
-  {id:"p5",name:"Maroon Aari Bridal Blouse",category:"aari",price:2899,mrp:null,fabric:"Silk blend with aari thread and stone work",sizes:["S","M","L","Made to measure"],colours:"Maroon and gold",description:"Fully hand-embroidered bridal blouse with maggam and stone work done using the traditional aari hook.",status:"Available",images:[]},
-  {id:"p6",name:"Floral Aari Work Saree Blouse",category:"aari",price:1799,mrp:2199,fabric:"Cotton silk with aari embroidery",sizes:["S","M","L"],colours:"Dusty pink, Mint",description:"Delicate floral aari embroidery on a fitted blouse — a statement piece for your favourite saree.",status:"Available",images:[]},
-  {id:"p7",name:"Boat Neck Custom Blouse",category:"blouses",price:899,mrp:null,fabric:"Your fabric or ours",sizes:["Made to measure"],colours:"Any colour",description:"Classic boat neck blouse stitched exactly to your measurements, with your choice of sleeve length.",status:"Available",images:[]},
-  {id:"p8",name:"Full Bridal Ensemble — Custom",category:"fullcustom",price:0,mrp:null,fabric:"Discussed on consultation",sizes:["Made to measure"],colours:"As per design",description:"Send us your reference design or describe your vision — bridal lehenga, gown or saree, fully custom stitched.",status:"Made to Order",images:[]}
-];
-
-/* ===================== STATE ===================== */
+/* ===================== LIVE STATE (synced from Firestore) ===================== */
 let products = [];
 let requests = [];
+let unsubscribeRequests = null;
 
-function loadState(){
-  try{
-    const stored = localStorage.getItem('div_products');
-    products = stored ? JSON.parse(stored) : defaultProducts.slice();
-    if(!stored){ localStorage.setItem('div_products', JSON.stringify(products)); }
-  }catch(e){ products = defaultProducts.slice(); }
-  try{
-    const storedReq = localStorage.getItem('div_requests');
-    requests = storedReq ? JSON.parse(storedReq) : [];
-  }catch(e){ requests = []; }
+function subscribeProducts(){
+  const q = query(productsCol, orderBy('createdAt', 'desc'));
+  onSnapshot(q, snapshot => {
+    products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderShop();
+    renderInventory();
+  }, err => {
+    console.error('Products sync error:', err);
+    showToast("Could not load the shop right now.");
+  });
 }
-function saveProducts(){ localStorage.setItem('div_products', JSON.stringify(products)); }
-function saveRequests(){ localStorage.setItem('div_requests', JSON.stringify(requests)); }
+
+function subscribeRequests(){
+  const q = query(requestsCol, orderBy('createdAt', 'desc'));
+  unsubscribeRequests = onSnapshot(q, snapshot => {
+    requests = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderRequests();
+  }, err => {
+    console.error('Requests sync error:', err);
+  });
+}
 
 /* ===================== RENDER SHOP ===================== */
 function renderShop(){
@@ -817,7 +843,7 @@ function productCard(p){
           <svg viewBox="0 0 24 24" width="15" height="15" fill="#fff"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.87.5 3.63 1.44 5.15L2 22l5.09-1.53a9.87 9.87 0 0 0 4.95 1.34h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Z"/></svg>
           WhatsApp
         </a>
-        <a class="ig-btn" href="https://ig.me/m/${igHandle}" target="_blank" title="Message ${igHandle} on Instagram">
+        <a class="ig-btn" href="https://ig.me/m/${igHandle}" title="Message ${igHandle} on Instagram">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="#fff"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56-.79.31-1.46.72-2.13 1.38A5.87 5.87 0 0 0 .63 4.14c-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13.66.66 1.34 1.07 2.13 1.38.76.3 1.63.5 2.91.56 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.13-1.38.66-.66 1.07-1.34 1.38-2.13.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91a5.87 5.87 0 0 0-1.38-2.13A5.87 5.87 0 0 0 16.86.63c-.76-.3-1.63-.5-2.91-.56C12.67.01 12.26 0 9 0h3ZM12 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84Zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.85-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></svg>
           Instagram
         </a>
@@ -833,8 +859,6 @@ function escapeHtml(str){
 }
 
 /* ===================== DELEGATED CLICK HANDLER ===================== */
-/* All buttons/links use data-action instead of inline onclick, so this
-   keeps working even on hosts that strip inline event attributes. */
 document.body.addEventListener('click', function(e){
   const el = e.target.closest('[data-action]');
   if(!el) return;
@@ -875,7 +899,7 @@ document.getElementById('customModalOverlay').addEventListener('click', e=>{
   if(e.target.id==='customModalOverlay') closeCustomModal();
 });
 
-function submitCustomOrder(){
+async function submitCustomOrder(){
   const name = document.getElementById('cName').value.trim();
   const phone = document.getElementById('cPhone').value.trim();
   const category = document.getElementById('cCategory').value;
@@ -886,14 +910,16 @@ function submitCustomOrder(){
     return;
   }
 
-  const entry = {
-    id: 'r'+Date.now(),
-    name, phone, category, details,
-    time: new Date().toLocaleString('en-IN')
-  };
-  requests.unshift(entry);
-  saveRequests();
-  renderRequests();
+  try{
+    await addDoc(requestsCol, {
+      name, phone, category, details,
+      createdAt: serverTimestamp()
+    });
+  }catch(err){
+    console.error(err);
+    showToast("Could not send request. Check your connection.");
+    return;
+  }
 
   const waMsg = encodeURIComponent(`Hi Dreams In Vogue! I'd like to place a custom order.\nName: ${name}\nCategory: ${category}\nDetails: ${details}`);
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`, '_blank');
@@ -915,28 +941,43 @@ function showToast(msg){
   toastTimer = setTimeout(()=>t.classList.remove('show'), 3200);
 }
 
-/* ===================== ADMIN LOGIN ===================== */
+/* ===================== ADMIN LOGIN (Firebase Auth) ===================== */
 function revealAdmin(){
   document.getElementById('adminSection').classList.add('open');
   document.getElementById('adminSection').scrollIntoView({behavior:'smooth'});
 }
-function tryAdminLogin(){
-  const val = document.getElementById('adminPassInput').value;
-  if(val === ADMIN_PASSWORD){
-    document.getElementById('adminGate').style.display = 'none';
-    document.getElementById('adminDashboard').classList.add('open');
-    renderInventory();
-    renderRequests();
-  }else{
-    showToast("Incorrect password.");
+async function tryAdminLogin(){
+  const email = document.getElementById('adminEmailInput').value.trim();
+  const pass = document.getElementById('adminPassInput').value;
+  if(!email || !pass){ showToast("Enter your email and password."); return; }
+  try{
+    await signInWithEmailAndPassword(auth, email, pass);
+  }catch(err){
+    showToast("Login failed: check your email and password.");
+    console.error(err);
   }
 }
 function adminLogout(){
-  document.getElementById('adminGate').style.display = 'block';
-  document.getElementById('adminDashboard').classList.remove('open');
-  document.getElementById('adminPassInput').value = '';
+  signOut(auth);
   document.getElementById('adminSection').classList.remove('open');
 }
+
+onAuthStateChanged(auth, user => {
+  const gate = document.getElementById('adminGate');
+  const dash = document.getElementById('adminDashboard');
+  if(user){
+    gate.style.display = 'none';
+    dash.classList.add('open');
+    document.getElementById('adminPassInput').value = '';
+    renderInventory();
+    subscribeRequests();
+  }else{
+    gate.style.display = 'block';
+    dash.classList.remove('open');
+    if(unsubscribeRequests){ unsubscribeRequests(); unsubscribeRequests = null; }
+    requests = [];
+  }
+});
 
 /* ===================== ADMIN TABS ===================== */
 document.querySelectorAll('.admin-tab').forEach(tab=>{
@@ -949,25 +990,45 @@ document.querySelectorAll('.admin-tab').forEach(tab=>{
 });
 
 /* ===================== UPLOAD FORM ===================== */
-let pendingImages = [];
+function compressImageToDataUrl(file, maxDim, quality){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = ()=>{
+      let { width, height } = img;
+      if(width > height && width > maxDim){
+        height = Math.round(height * (maxDim/width));
+        width = maxDim;
+      }else if(height > maxDim){
+        width = Math.round(width * (maxDim/height));
+        height = maxDim;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(objectUrl);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(objectUrl); reject(new Error('Image load failed')); };
+    img.src = objectUrl;
+  });
+}
+
+let pendingFiles = [];
 document.getElementById('pImages').addEventListener('change', function(e){
-  const files = Array.from(e.target.files);
-  pendingImages = [];
+  pendingFiles = Array.from(e.target.files);
   const strip = document.getElementById('previewStrip');
   strip.innerHTML = '';
-  files.forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      pendingImages.push(ev.target.result);
-      const img = document.createElement('img');
-      img.src = ev.target.result;
-      strip.appendChild(img);
-    };
-    reader.readAsDataURL(file);
+  pendingFiles.forEach(file=>{
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    strip.appendChild(img);
   });
 });
 
-function saveProduct(){
+async function saveProduct(){
   const name = document.getElementById('pName').value.trim();
   const category = document.getElementById('pCategory').value;
   const status = document.getElementById('pStatus').value;
@@ -979,21 +1040,38 @@ function saveProduct(){
   const sizes = Array.from(document.querySelectorAll('#pSizes input:checked')).map(c=>c.value);
 
   if(!name){ showToast("Please enter a dress name."); return; }
+  if(pendingFiles.length > 3){ showToast("Please choose up to 3 photos per dress."); return; }
 
-  const product = {
-    id: 'p'+Date.now(),
-    name, category, status,
-    price: price ? Number(price) : 0,
-    mrp: mrp ? Number(mrp) : null,
-    fabric, colours, description, sizes,
-    images: pendingImages.slice()
-  };
-  products.unshift(product);
-  saveProducts();
-  renderShop();
-  renderInventory();
+  showToast("Preparing photos, please wait...");
+  let imageUrls = [];
+  try{
+    for(const file of pendingFiles){
+      const compressed = await compressImageToDataUrl(file, 900, 0.72);
+      imageUrls.push(compressed);
+    }
+  }catch(err){
+    console.error(err);
+    showToast("Could not process photos. Try smaller images.");
+    return;
+  }
+
+  try{
+    await addDoc(productsCol, {
+      name, category, status,
+      price: price ? Number(price) : 0,
+      mrp: mrp ? Number(mrp) : null,
+      fabric, colours, description, sizes,
+      images: imageUrls,
+      createdAt: serverTimestamp()
+    });
+  }catch(err){
+    console.error(err);
+    showToast("Could not save the dress. Try fewer/smaller photos.");
+    return;
+  }
+
   resetProductForm();
-  showToast("Dress listed successfully.");
+  showToast("Dress listed successfully — live for everyone now.");
 }
 
 function resetProductForm(){
@@ -1006,7 +1084,7 @@ function resetProductForm(){
   document.querySelectorAll('#pSizes input').forEach(c=>c.checked=false);
   document.getElementById('pImages').value='';
   document.getElementById('previewStrip').innerHTML='';
-  pendingImages = [];
+  pendingFiles = [];
 }
 
 /* ===================== INVENTORY ===================== */
@@ -1032,12 +1110,14 @@ function renderInventory(){
     </tr>`;
   }).join('');
 }
-function deleteProduct(id){
-  products = products.filter(p=>p.id!==id);
-  saveProducts();
-  renderShop();
-  renderInventory();
-  showToast("Dress removed.");
+async function deleteProduct(id){
+  try{
+    await deleteDoc(doc(db, 'products', id));
+    showToast("Dress removed.");
+  }catch(err){
+    console.error(err);
+    showToast("Could not delete. Try again.");
+  }
 }
 
 /* ===================== REQUESTS ===================== */
@@ -1052,8 +1132,9 @@ function renderRequests(){
   empty.style.display='none';
   list.innerHTML = requests.map(r=>{
     const waMsg = encodeURIComponent(`Hi ${r.name}, this is Dreams In Vogue regarding your custom order request.`);
+    const timeStr = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString('en-IN') : 'Just now';
     return `<div class="req-card">
-      <div class="req-top"><strong>${escapeHtml(r.name)} &middot; ${escapeHtml(r.phone)}</strong><span class="time">${r.time}</span></div>
+      <div class="req-top"><strong>${escapeHtml(r.name)} &middot; ${escapeHtml(r.phone)}</strong><span class="time">${timeStr}</span></div>
       <div class="req-cat">${escapeHtml(r.category)}</div>
       <div class="req-details">${escapeHtml(r.details)}</div>
       <div class="req-actions">
@@ -1063,10 +1144,13 @@ function renderRequests(){
     </div>`;
   }).join('');
 }
-function deleteRequest(id){
-  requests = requests.filter(r=>r.id!==id);
-  saveRequests();
-  renderRequests();
+async function deleteRequest(id){
+  try{
+    await deleteDoc(doc(db, 'requests', id));
+  }catch(err){
+    console.error(err);
+    showToast("Could not delete. Try again.");
+  }
 }
 
 /* ===================== SECRET ADMIN ACCESS ===================== */
@@ -1084,8 +1168,7 @@ window.addEventListener('hashchange', checkAdminHash);
 
 /* ===================== INIT ===================== */
 document.getElementById('year').textContent = new Date().getFullYear();
-loadState();
-renderShop();
+subscribeProducts();
 checkAdminHash();
 </script>
 </body>
