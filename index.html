@@ -1352,7 +1352,20 @@ function productCard(p){
   const priceHtml = p.price && p.price>0
     ? `<span class="price">Rs. ${Number(p.price).toLocaleString('en-IN')}</span>${p.mrp?`<span class="mrp">Rs. ${Number(p.mrp).toLocaleString('en-IN')}</span>`:''}`
     : `<span class="price">On consultation</span>`;
-  const waMsg = encodeURIComponent(`Hi Dreams In Vogue! I'd like to enquire about "${p.name}" (${catDisplayName[p.category]}).`);
+  const priceLine = p.price && p.price>0 ? `Rs. ${Number(p.price).toLocaleString('en-IN')}` : 'On consultation';
+  const detailLines = [
+    `Hi Dreams In Vogue! I'd like to enquire about this piece:`,
+    ``,
+    `Name: ${p.name}`,
+    `Category: ${catDisplayName[p.category]}`,
+    p.fabric ? `Fabric: ${p.fabric}` : null,
+    `Price: ${priceLine}`,
+    (p.sizes && p.sizes.length>0) ? `Size: ${p.sizes.join(', ')}` : null,
+    p.colours ? `Colour: ${p.colours}` : null,
+    ``,
+    `Could you share more details and availability?`
+  ].filter(line => line !== null).join('\n');
+  const waMsg = encodeURIComponent(detailLines);
   const igHandle = instagramFor(p.category);
   const wished = (JSON.parse(localStorage.getItem('div_wishlist')||'[]')).includes(p.id);
   return `
