@@ -319,6 +319,12 @@
     background:transparent;color:#C9BC9F;font-size:.82rem;
   }
   .admin-tab.active{background:var(--gold);color:#241A08;border-color:var(--gold);font-weight:600;}
+  .role-badge{
+    display:inline-block;margin-top:10px;padding:4px 12px;border-radius:20px;
+    font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;
+  }
+  .role-badge.role-admin{background:#1F4A3D;color:#B7E2CF;}
+  .role-badge.role-manager{background:#4A3B1E;color:#E2C99C;}
   .admin-panel{display:none;}
   .admin-panel.active{display:block;}
   .admin-card{
@@ -837,6 +843,7 @@
         <div>
           <h2>Boutique dashboard</h2>
           <p>Upload new dresses, manage your inventory and view custom order requests.</p>
+          <span id="roleBadge" class="role-badge"></span>
         </div>
         <button class="btn small ghost" style="border-color:#4A4130;color:#C9BC9F;" data-action="adminLogout">Log out</button>
       </div>
@@ -853,6 +860,7 @@
         <button class="admin-tab" data-panel="sizechart">Size chart</button>
         <button class="admin-tab" data-panel="faqadmin">FAQ</button>
         <button class="admin-tab" data-panel="story">Our story</button>
+        <button class="admin-tab" data-panel="approvals">Pending Approvals</button>
       </div>
 
       <!-- UPLOAD PANEL -->
@@ -956,7 +964,7 @@
         </div>
         <div class="admin-card">
           <table class="inv-table" id="ordersTable">
-            <thead><tr><th></th><th>Customer</th><th>Category</th><th>Status</th><th>Total</th><th>Paid</th><th>Balance</th><th>Delivery</th></tr></thead>
+            <thead><tr><th></th><th>Customer</th><th>Category</th><th>Status</th><th>Total</th><th>Paid</th><th>Balance</th><th>Delivery</th><th>Action</th></tr></thead>
             <tbody id="ordersTableBody"></tbody>
           </table>
           <p class="empty-note" id="ordersEmpty" style="display:none;">No orders logged yet.</p>
@@ -970,7 +978,7 @@
         </div>
         <div class="admin-card">
           <table class="inv-table" id="materialsTable">
-            <thead><tr><th></th><th>Item</th><th>Supplier</th><th>Cost</th><th>Date</th></tr></thead>
+            <thead><tr><th></th><th>Item</th><th>Supplier</th><th>Cost</th><th>Date</th><th>Action</th></tr></thead>
             <tbody id="materialsTableBody"></tbody>
           </table>
           <p class="empty-note" id="materialsEmpty" style="display:none;">No material purchases logged yet.</p>
@@ -984,7 +992,7 @@
         </div>
         <div class="admin-card">
           <table class="inv-table" id="expensesTable">
-            <thead><tr><th>Category</th><th>Amount</th><th>Date</th><th>Description</th></tr></thead>
+            <thead><tr><th>Category</th><th>Amount</th><th>Date</th><th>Description</th><th>Action</th></tr></thead>
             <tbody id="expensesTableBody"></tbody>
           </table>
           <p class="empty-note" id="expensesEmpty" style="display:none;">No expenses logged yet.</p>
@@ -1087,6 +1095,15 @@
           </div>
           <button class="btn gold" data-action="saveStory">Save our story</button>
         </div>
+      </div>
+
+      <!-- PENDING APPROVALS PANEL -->
+      <div class="admin-panel" id="panel-approvals">
+        <p style="color:#A79A82;font-size:.85rem;margin-bottom:20px;">
+          When a manager deletes something, it's hidden from the site right away but kept safe here until you approve it permanently or reject it to bring it back.
+        </p>
+        <div id="approvalsList"></div>
+        <p class="empty-note" id="approvalsEmpty" style="display:none;">Nothing waiting for approval right now.</p>
       </div>
     </div>
   </div>
@@ -1539,6 +1556,7 @@ document.body.addEventListener('click', function(e){
   const action = el.dataset.action;
   const id = el.dataset.id;
   const idx = el.dataset.idx;
+  const col = el.dataset.col;
 
   const localActions = {
     openCustomModal, closeCustomModal,
@@ -1577,7 +1595,10 @@ document.body.addEventListener('click', function(e){
     openExpenseModal: ()=>window.openExpenseModal && window.openExpenseModal(id),
     closeExpenseModal: ()=>window.closeExpenseModal && window.closeExpenseModal(),
     saveExpense: ()=>window.saveExpense && window.saveExpense(),
-    deleteExpenseFromModal: ()=>window.deleteExpenseFromModal && window.deleteExpenseFromModal()
+    deleteExpenseFromModal: ()=>window.deleteExpenseFromModal && window.deleteExpenseFromModal(),
+    requestDeleteGeneric: ()=>window.requestDeleteGeneric && window.requestDeleteGeneric(col, id, el.dataset.label),
+    approveDeleteBtn: ()=>window.approveDeleteBtn && window.approveDeleteBtn(col, id),
+    rejectDeleteBtn: ()=>window.rejectDeleteBtn && window.rejectDeleteBtn(col, id)
   };
   if(remoteActions[action]){
     remoteActions[action]();
@@ -1666,6 +1687,7 @@ function subscribeProducts(){
     window.__DIV_PRODUCTS__ = products;
     renderShop();
     renderInventory();
+    renderApprovals();
   }, err => {
     console.error('Products sync error:', err);
     showToast("Could not load the shop right now.");
@@ -1677,6 +1699,7 @@ function subscribeRequests(){
   unsubscribeRequests = onSnapshot(q, snapshot => {
     requests = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderRequests();
+    renderApprovals();
   }, err => {
     console.error('Requests sync error:', err);
   });
@@ -1687,6 +1710,7 @@ function subscribeTestimonials(){
   onSnapshot(q, snapshot => {
     testimonials = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderTestimonials();
+    renderApprovals();
   }, err => {
     console.error('Testimonials sync error:', err);
   });
@@ -1697,6 +1721,7 @@ function subscribeFaqs(){
   onSnapshot(q, snapshot => {
     faqs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderFaqs();
+    renderApprovals();
   }, err => {
     console.error('FAQ sync error:', err);
   });
@@ -1726,6 +1751,7 @@ function subscribeOrders(){
     orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderOrders();
     renderSummary();
+    renderApprovals();
   }, err => console.error('Orders sync error:', err));
 }
 
@@ -1735,6 +1761,7 @@ function subscribeMaterials(){
     materials = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderMaterials();
     renderSummary();
+    renderApprovals();
   }, err => console.error('Materials sync error:', err));
 }
 
@@ -1744,6 +1771,7 @@ function subscribeExpenses(){
     expenses = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderExpenses();
     renderSummary();
+    renderApprovals();
   }, err => console.error('Expenses sync error:', err));
 }
 
@@ -1754,7 +1782,7 @@ function renderShop(){
   const cats = ["maternity","sarees","aari","blouses","fullcustom"];
   cats.forEach(cat=>{
     const container = document.getElementById('grid-'+cat);
-    let items = products.filter(p=>p.category===cat);
+    let items = products.filter(p=>p.category===cat && !p.pendingDelete);
 
     if(search){
       items = items.filter(p=>
@@ -1890,22 +1918,174 @@ function adminLogout(){
 window.tryAdminLogin = tryAdminLogin;
 window.adminLogout = adminLogout;
 
+/* ===================== ROLE MANAGEMENT (admin vs manager) ===================== */
+/* IMPORTANT: set this to the exact email address you use to log in as the
+   boutique owner. Anyone else who logs in (e.g. a manager account you create
+   in Firebase Authentication) is treated as a manager automatically. */
+const ADMIN_EMAIL = "keerthy@dreamsinvogue.com";
+let currentUserEmail = null;
+let currentUserRole = 'manager';
+
+function updateRoleUI(){
+  const badge = document.getElementById('roleBadge');
+  if(!badge) return;
+  if(currentUserRole === 'admin'){
+    badge.textContent = 'Signed in as Admin';
+    badge.className = 'role-badge role-admin';
+  }else{
+    badge.textContent = 'Signed in as Manager';
+    badge.className = 'role-badge role-manager';
+  }
+  document.body.classList.toggle('is-manager', currentUserRole === 'manager');
+}
+
 onAuthStateChanged(auth, user => {
   const gate = document.getElementById('adminGate');
   const dash = document.getElementById('adminDashboard');
   if(user){
+    currentUserEmail = user.email || '';
+    currentUserRole = (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) ? 'admin' : 'manager';
+    updateRoleUI();
     gate.style.display = 'none';
     dash.classList.add('open');
     document.getElementById('adminPassInput').value = '';
     renderInventory();
+    renderTestimonials();
+    renderFaqs();
+    renderOrders();
+    renderMaterials();
+    renderExpenses();
+    renderApprovals();
     subscribeRequests();
   }else{
+    currentUserEmail = null;
+    currentUserRole = 'manager';
     gate.style.display = 'block';
     dash.classList.remove('open');
     if(unsubscribeRequests){ unsubscribeRequests(); unsubscribeRequests = null; }
     requests = [];
   }
 });
+
+/* ===================== SOFT-DELETE / APPROVAL WORKFLOW ===================== */
+/* Admin deletes go through immediately. Manager deletes are marked pending
+   and hidden from the public site, but stay in the database until the
+   admin approves (permanent delete) or rejects (fully restored).
+   This is now also enforced by Firestore's own security rules (not just
+   the app), based on a role stored in the 'roles' collection keyed by
+   each person's Firebase Auth UID — so a manager truly cannot force a
+   permanent delete, even by bypassing the interface. */
+function friendlyDeleteError(err){
+  if(err && err.code === 'permission-denied'){
+    return "You don't have permission to do this. Only the admin account can approve or finalize a deletion.";
+  }
+  return "Could not process this. Try again.";
+}
+async function requestDelete(collectionName, id, label){
+  try{
+    if(currentUserRole === 'admin'){
+      await deleteDoc(doc(db, collectionName, id));
+      showToast(label + " deleted.");
+    }else{
+      await updateDoc(doc(db, collectionName, id), {
+        pendingDelete: true,
+        pendingDeleteBy: currentUserEmail || 'manager',
+        pendingDeleteAt: serverTimestamp()
+      });
+      showToast(label + " sent for admin approval to delete.");
+    }
+  }catch(err){
+    console.error(err);
+    showToast(friendlyDeleteError(err));
+  }
+}
+async function approveDeleteFn(collectionName, id){
+  try{
+    await deleteDoc(doc(db, collectionName, id));
+    showToast("Deletion approved — removed permanently.");
+  }catch(err){
+    console.error(err);
+    showToast(friendlyDeleteError(err));
+  }
+}
+async function rejectDeleteFn(collectionName, id){
+  try{
+    await updateDoc(doc(db, collectionName, id), {
+      pendingDelete: false, pendingDeleteBy: null, pendingDeleteAt: null
+    });
+    showToast("Deletion rejected — item restored.");
+  }catch(err){
+    console.error(err);
+    showToast(friendlyDeleteError(err));
+  }
+}
+window.approveDeleteItem = (collectionName, id) => approveDeleteFn(collectionName, id);
+window.rejectDeleteItem = (collectionName, id) => rejectDeleteFn(collectionName, id);
+
+function pendingBadgeHtml(item){
+  if(!item.pendingDelete) return '';
+  return `<span class="status-chip pay-unpaid" style="margin-left:8px;">Pending Deletion</span>`;
+}
+function pendingActionButtons(collectionName, item){
+  if(!item.pendingDelete){
+    return `<button class="row-del" data-action="requestDeleteGeneric" data-col="${collectionName}" data-id="${item.id}" data-label="${escAttr(itemLabelFor(collectionName))}">Delete</button>`;
+  }
+  if(currentUserRole === 'admin'){
+    return `<button class="row-del" style="background:none;border:1px solid #1f4a3d;color:#8fe2c2;" data-action="approveDeleteBtn" data-col="${collectionName}" data-id="${item.id}">Approve</button>
+      <button class="row-del" data-action="rejectDeleteBtn" data-col="${collectionName}" data-id="${item.id}" style="margin-left:6px;">Reject</button>`;
+  }
+  return `<button class="row-del" data-action="rejectDeleteBtn" data-col="${collectionName}" data-id="${item.id}">Cancel request</button>`;
+}
+function itemLabelFor(collectionName){
+  const map = { products:'Dress', testimonials:'Review', faqs:'FAQ', orders:'Order', materials:'Purchase', expenses:'Expense', requests:'Request' };
+  return map[collectionName] || 'Item';
+}
+function requestDeleteGeneric(collectionName, id, label){
+  requestDelete(collectionName, id, label);
+}
+window.requestDeleteGeneric = requestDeleteGeneric;
+function closeAllAdminModals(){
+  ['orderModalOverlay','materialModalOverlay','expenseModalOverlay'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.classList.remove('open');
+  });
+}
+window.approveDeleteBtn = (collectionName, id) => { approveDeleteFn(collectionName, id); closeAllAdminModals(); };
+window.rejectDeleteBtn = (collectionName, id) => { rejectDeleteFn(collectionName, id); closeAllAdminModals(); };
+
+/* ===================== PENDING APPROVALS (aggregated view) ===================== */
+function renderApprovals(){
+  const list = document.getElementById('approvalsList');
+  const empty = document.getElementById('approvalsEmpty');
+  if(!list) return;
+
+  const entries = [];
+  products.forEach(p=> p.pendingDelete && entries.push({col:'products', id:p.id, label:'Dress', title:p.name, by:p.pendingDeleteBy}));
+  testimonials.forEach(t=> t.pendingDelete && entries.push({col:'testimonials', id:t.id, label:'Review', title:t.name, by:t.pendingDeleteBy}));
+  faqs.forEach(f=> f.pendingDelete && entries.push({col:'faqs', id:f.id, label:'FAQ', title:f.question, by:f.pendingDeleteBy}));
+  orders.forEach(o=> o.pendingDelete && entries.push({col:'orders', id:o.id, label:'Order', title:o.customerName, by:o.pendingDeleteBy}));
+  materials.forEach(m=> m.pendingDelete && entries.push({col:'materials', id:m.id, label:'Purchase', title:m.itemName, by:m.pendingDeleteBy}));
+  expenses.forEach(x=> x.pendingDelete && entries.push({col:'expenses', id:x.id, label:'Expense', title:(x.category+(x.description?': '+x.description:'')), by:x.pendingDeleteBy}));
+  requests.forEach(r=> r.pendingDelete && entries.push({col:'requests', id:r.id, label:'Request', title:r.name, by:r.pendingDeleteBy}));
+
+  if(entries.length===0){
+    list.innerHTML=''; empty.style.display='block'; return;
+  }
+  empty.style.display='none';
+  list.innerHTML = entries.map(e=>{
+    const actionBtns = currentUserRole === 'admin'
+      ? `<button class="row-del" style="background:none;border:1px solid #1f4a3d;color:#8fe2c2;" data-action="approveDeleteBtn" data-col="${e.col}" data-id="${e.id}">Approve</button>
+         <button class="row-del" data-action="rejectDeleteBtn" data-col="${e.col}" data-id="${e.id}" style="margin-left:6px;">Reject</button>`
+      : `<button class="row-del" data-action="rejectDeleteBtn" data-col="${e.col}" data-id="${e.id}">Cancel request</button>`;
+    return `<div class="admin-list-item">
+      <div class="ali-top">
+        <strong>${escHtml(e.label)}: ${escHtml(e.title||'')}</strong>
+        <div>${actionBtns}</div>
+      </div>
+      <div class="ali-meta">Requested by ${escHtml(e.by||'manager')}</div>
+    </div>`;
+  }).join('');
+}
 
 /* ===================== UPLOAD FORM ===================== */
 function compressImageToDataUrl(file, maxDim, quality){
@@ -2025,19 +2205,13 @@ function renderInventory(){
       <td>${escHtml(p.name)}</td>
       <td>${catDisplayName[p.category]}</td>
       <td>${p.price? 'Rs. '+Number(p.price).toLocaleString('en-IN') : 'On consultation'}</td>
-      <td><span class="status-chip ${chipClass}">${p.status}</span></td>
-      <td><button class="row-del" data-action="deleteProduct" data-id="${p.id}">Delete</button></td>
+      <td><span class="status-chip ${chipClass}">${p.status}</span>${pendingBadgeHtml(p)}</td>
+      <td>${pendingActionButtons('products', p)}</td>
     </tr>`;
   }).join('');
 }
 async function deleteProduct(id){
-  try{
-    await deleteDoc(doc(db, 'products', id));
-    showToast("Dress removed.");
-  }catch(err){
-    console.error(err);
-    showToast("Could not delete. Try again.");
-  }
+  await requestDelete('products', id, 'Dress');
 }
 window.deleteProduct = deleteProduct;
 
@@ -2056,32 +2230,28 @@ function renderRequests(){
     const timeStr = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString('en-IN') : 'Just now';
     return `<div class="req-card">
       <div class="req-top"><strong>${escHtml(r.name)} &middot; ${escHtml(r.phone)}</strong><span class="time">${timeStr}</span></div>
-      <div class="req-cat">${escHtml(r.category)}</div>
+      <div class="req-cat">${escHtml(r.category)}${pendingBadgeHtml(r)}</div>
       <div class="req-details">${escHtml(r.details)}</div>
       <div class="req-actions">
         <a class="wa-link" href="https://wa.me/${r.phone.replace(/[^0-9]/g,'')}?text=${waMsg}" target="_blank">Reply on WhatsApp</a>
-        <button data-action="deleteRequest" data-id="${r.id}">Delete</button>
+        ${pendingActionButtons('requests', r)}
       </div>
     </div>`;
   }).join('');
 }
 async function deleteRequest(id){
-  try{
-    await deleteDoc(doc(db, 'requests', id));
-  }catch(err){
-    console.error(err);
-    showToast("Could not delete. Try again.");
-  }
+  await requestDelete('requests', id, 'Request');
 }
 window.deleteRequest = deleteRequest;
 
 /* ===================== TESTIMONIALS (customer reviews) ===================== */
 function renderTestimonials(){
   const grid = document.getElementById('testiGrid');
-  if(testimonials.length===0){
+  const publicTestimonials = testimonials.filter(t=>!t.pendingDelete);
+  if(publicTestimonials.length===0){
     grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--ink-soft);">Reviews coming soon.</p>';
   }else{
-    grid.innerHTML = testimonials.map(t=>{
+    grid.innerHTML = publicTestimonials.map(t=>{
       const stars = '★'.repeat(Number(t.stars)||5) + '☆'.repeat(5-(Number(t.stars)||5));
       return `<div class="testi-card">
         <div class="testi-stars">${stars}</div>
@@ -2100,8 +2270,8 @@ function renderTestimonials(){
         const stars = '★'.repeat(Number(t.stars)||5);
         return `<div class="admin-list-item">
           <div class="ali-top">
-            <strong>${escHtml(t.name)}${t.location?` &middot; ${escHtml(t.location)}`:''}</strong>
-            <button class="row-del" data-action="deleteTestimonial" data-id="${t.id}">Delete</button>
+            <strong>${escHtml(t.name)}${t.location?` &middot; ${escHtml(t.location)}`:''}</strong>${pendingBadgeHtml(t)}
+            <div>${pendingActionButtons('testimonials', t)}</div>
           </div>
           <div class="stars-mini">${stars}</div>
           <p>"${escHtml(t.quote)}"</p>
@@ -2128,13 +2298,7 @@ async function saveTestimonialFn(){
   }
 }
 async function deleteTestimonialFn(id){
-  try{
-    await deleteDoc(doc(db, 'testimonials', id));
-    showToast("Review removed.");
-  }catch(err){
-    console.error(err);
-    showToast("Could not delete. Try again.");
-  }
+  await requestDelete('testimonials', id, 'Review');
 }
 window.saveTestimonial = saveTestimonialFn;
 window.deleteTestimonial = deleteTestimonialFn;
@@ -2142,10 +2306,11 @@ window.deleteTestimonial = deleteTestimonialFn;
 /* ===================== FAQ ===================== */
 function renderFaqs(){
   const list = document.getElementById('faqList');
-  if(faqs.length===0){
+  const publicFaqs = faqs.filter(f=>!f.pendingDelete);
+  if(publicFaqs.length===0){
     list.innerHTML = '<p style="text-align:center;color:var(--ink-soft);">FAQs coming soon.</p>';
   }else{
-    list.innerHTML = faqs.map(f=>`
+    list.innerHTML = publicFaqs.map(f=>`
       <div class="faq-item">
         <button class="faq-q">${escHtml(f.question)} <span class="plus">+</span></button>
         <div class="faq-a"><p>${escHtml(f.answer)}</p></div>
@@ -2160,8 +2325,8 @@ function renderFaqs(){
       adminList.innerHTML = faqs.map(f=>`
         <div class="admin-list-item">
           <div class="ali-top">
-            <strong>${escHtml(f.question)}</strong>
-            <button class="row-del" data-action="deleteFaq" data-id="${f.id}">Delete</button>
+            <strong>${escHtml(f.question)}</strong>${pendingBadgeHtml(f)}
+            <div>${pendingActionButtons('faqs', f)}</div>
           </div>
           <p>${escHtml(f.answer)}</p>
         </div>`).join('');
@@ -2183,13 +2348,7 @@ async function saveFaqFn(){
   }
 }
 async function deleteFaqFn(id){
-  try{
-    await deleteDoc(doc(db, 'faqs', id));
-    showToast("Question removed.");
-  }catch(err){
-    console.error(err);
-    showToast("Could not delete. Try again.");
-  }
+  await requestDelete('faqs', id, 'FAQ');
 }
 window.saveFaq = saveFaqFn;
 window.deleteFaq = deleteFaqFn;
@@ -2392,15 +2551,48 @@ function renderOrders(){
     const balance = (Number(o.totalAmount)||0) - (Number(o.amountPaid)||0);
     return `<tr data-action="openOrderModal" data-id="${o.id}">
       <td>${thumb}</td>
-      <td>${escHtml(o.customerName)}${o.phone?`<div class="ali-meta">${escHtml(o.phone)}</div>`:''}</td>
+      <td>${escHtml(o.customerName)}${o.phone?`<div class="ali-meta">${escHtml(o.phone)}</div>`:''}${pendingBadgeHtml(o)}</td>
       <td>${orderCatNames[o.category]||''}</td>
       <td><span class="status-chip ${orderStatusClass(o.status)}">${escHtml(o.status||'New')}</span></td>
       <td>Rs. ${(Number(o.totalAmount)||0).toLocaleString('en-IN')}</td>
       <td>Rs. ${(Number(o.amountPaid)||0).toLocaleString('en-IN')}</td>
       <td><span class="status-chip ${pay.cls}">${balance>0?'Rs. '+balance.toLocaleString('en-IN'):pay.label}</span></td>
       <td>${o.deliveryDate||'—'}</td>
+      <td>${pendingActionButtons('orders', o)}</td>
     </tr>`;
   }).join('');
+}
+
+function configureModalDeleteButton(btnId, item, collectionName){
+  const btn = document.getElementById(btnId);
+  if(!item){ btn.style.display = 'none'; return; }
+  if(item.pendingDelete){
+    if(currentUserRole === 'admin'){
+      btn.style.display = 'inline-flex';
+      btn.textContent = 'Approve deletion';
+      btn.dataset.action = 'approveDeleteBtn';
+      btn.dataset.col = collectionName;
+      btn.dataset.id = item.id;
+      btn.style.borderColor = '#1f4a3d';
+      btn.style.color = '#8fe2c2';
+    }else{
+      btn.style.display = 'inline-flex';
+      btn.textContent = 'Cancel deletion request';
+      btn.dataset.action = 'rejectDeleteBtn';
+      btn.dataset.col = collectionName;
+      btn.dataset.id = item.id;
+      btn.style.borderColor = '#4A4130';
+      btn.style.color = '#C9BC9F';
+    }
+  }else{
+    btn.style.display = 'inline-flex';
+    btn.textContent = collectionName === 'orders' ? 'Delete order' : (collectionName === 'materials' ? 'Delete purchase' : 'Delete expense');
+    btn.dataset.action = collectionName === 'orders' ? 'deleteOrderFromModal' : (collectionName === 'materials' ? 'deleteMaterialFromModal' : 'deleteExpenseFromModal');
+    delete btn.dataset.col;
+    delete btn.dataset.id;
+    btn.style.borderColor = '#4A4130';
+    btn.style.color = '#C9BC9F';
+  }
 }
 
 function openOrderModalFn(id){
@@ -2423,7 +2615,7 @@ function openOrderModalFn(id){
   existingOrderImages = o ? (o.images||[]) : [];
   const strip = document.getElementById('orderPreviewStrip');
   strip.innerHTML = existingOrderImages.map(src=>`<img src="${src}">`).join('');
-  document.getElementById('orderDeleteBtn').style.display = isEdit ? 'inline-flex' : 'none';
+  configureModalDeleteButton('orderDeleteBtn', o, 'orders');
   document.getElementById('orderModalOverlay').classList.add('open');
 }
 function closeOrderModalFn(){
@@ -2484,13 +2676,7 @@ async function saveOrderFn(){
   }
 }
 async function deleteOrderFn(id){
-  try{
-    await deleteDoc(doc(db, 'orders', id));
-    showToast("Order removed.");
-  }catch(err){
-    console.error(err);
-    showToast("Could not delete. Try again.");
-  }
+  await requestDelete('orders', id, 'Order');
 }
 function deleteOrderFromModalFn(){
   const id = document.getElementById('orEditId').value;
@@ -2531,10 +2717,11 @@ function renderMaterials(){
     const thumb = (m.images && m.images.length>0) ? `<img class="inv-thumb" src="${m.images[0]}">` : `<div class="inv-thumb"></div>`;
     return `<tr data-action="openMaterialModal" data-id="${m.id}">
       <td>${thumb}</td>
-      <td>${escHtml(m.itemName)}</td>
+      <td>${escHtml(m.itemName)}${pendingBadgeHtml(m)}</td>
       <td>${escHtml(m.supplier||'—')}</td>
       <td>Rs. ${(Number(m.cost)||0).toLocaleString('en-IN')}</td>
       <td>${m.purchaseDate||'—'}</td>
+      <td>${pendingActionButtons('materials', m)}</td>
     </tr>`;
   }).join('');
 }
@@ -2554,7 +2741,7 @@ function openMaterialModalFn(id){
   existingMaterialImages = m ? (m.images||[]) : [];
   const strip = document.getElementById('materialPreviewStrip');
   strip.innerHTML = existingMaterialImages.map(src=>`<img src="${src}">`).join('');
-  document.getElementById('materialDeleteBtn').style.display = isEdit ? 'inline-flex' : 'none';
+  configureModalDeleteButton('materialDeleteBtn', m, 'materials');
   document.getElementById('materialModalOverlay').classList.add('open');
 }
 function closeMaterialModalFn(){
@@ -2608,13 +2795,7 @@ async function saveMaterialFn(){
   }
 }
 async function deleteMaterialFn(id){
-  try{
-    await deleteDoc(doc(db, 'materials', id));
-    showToast("Purchase removed.");
-  }catch(err){
-    console.error(err);
-    showToast("Could not delete. Try again.");
-  }
+  await requestDelete('materials', id, 'Purchase');
 }
 function deleteMaterialFromModalFn(){
   const id = document.getElementById('matEditId').value;
@@ -2637,10 +2818,11 @@ function renderExpenses(){
   empty.style.display='none';
   body.innerHTML = expenses.map(x=>`
     <tr data-action="openExpenseModal" data-id="${x.id}">
-      <td>${escHtml(x.category)}</td>
+      <td>${escHtml(x.category)}${pendingBadgeHtml(x)}</td>
       <td>Rs. ${(Number(x.amount)||0).toLocaleString('en-IN')}</td>
       <td>${x.date||'—'}</td>
       <td>${escHtml(x.description||'—')}</td>
+      <td>${pendingActionButtons('expenses', x)}</td>
     </tr>`).join('');
 }
 
@@ -2653,7 +2835,7 @@ function openExpenseModalFn(id){
   document.getElementById('expAmount').value = x ? x.amount||'' : '';
   document.getElementById('expDate').value = x ? x.date||'' : '';
   document.getElementById('expDesc').value = x ? x.description||'' : '';
-  document.getElementById('expenseDeleteBtn').style.display = isEdit ? 'inline-flex' : 'none';
+  configureModalDeleteButton('expenseDeleteBtn', x, 'expenses');
   document.getElementById('expenseModalOverlay').classList.add('open');
 }
 function closeExpenseModalFn(){
@@ -2683,13 +2865,7 @@ async function saveExpenseFn(){
   }
 }
 async function deleteExpenseFn(id){
-  try{
-    await deleteDoc(doc(db, 'expenses', id));
-    showToast("Expense removed.");
-  }catch(err){
-    console.error(err);
-    showToast("Could not delete. Try again.");
-  }
+  await requestDelete('expenses', id, 'Expense');
 }
 function deleteExpenseFromModalFn(){
   const id = document.getElementById('expEditId').value;
