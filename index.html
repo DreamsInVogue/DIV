@@ -655,6 +655,7 @@
   .wish-item-body span{font-size:.78rem;color:var(--ink-soft);}
   .wish-remove{background:none;border:1px solid var(--line);border-radius:3px;padding:6px 12px;font-size:.72rem;color:var(--ink-soft);}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -890,6 +891,9 @@
 
       <!-- BUSINESS SUMMARY PANEL -->
       <div class="admin-panel" id="panel-summary">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+          <button class="btn gold small" data-action="exportExcelReport">⬇ Export to Excel</button>
+        </div>
         <div class="summary-section-title" style="margin-top:0;">All time</div>
         <div class="summary-cards" id="summaryAllTime"></div>
         <div class="summary-section-title">This month</div>
@@ -1882,6 +1886,7 @@ document.body.addEventListener('click', function(e){
     deleteSizeTip: ()=>window.deleteSizeTip && window.deleteSizeTip(idx),
     saveSizeGuide: ()=>window.saveSizeGuide && window.saveSizeGuide(),
     saveStory: ()=>window.saveStory && window.saveStory(),
+    exportExcelReport: ()=>window.exportExcelReport && window.exportExcelReport(),
     openOrderModal: ()=>window.openOrderModal && window.openOrderModal(id),
     closeOrderModal: ()=>window.closeOrderModal && window.closeOrderModal(),
     saveOrder: ()=>window.saveOrder && window.saveOrder(),
@@ -3312,6 +3317,124 @@ function renderSummary(){
     }).join('');
   }
 }
+
+/* ===================== EXCEL EXPORT ===================== */
+function fmtDate(d){
+  return d ? d : '—';
+}
+function fmtYesNo(v){
+  return v ? 'Yes' : 'No';
+}
+function exportExcelReportFn(){
+  if(typeof XLSX === 'undefined'){
+    showToast("Export library didn't load. Check your connection and try again.");
+    return;
+  }
+  try{
+    const wb = XLSX.utils.book_new();
+
+    /* ---------- ORDERS SHEET ---------- */
+    const ordersRows = orders.map(o=>{
+      const balance = (Number(o.totalAmount)||0) - (Number(o.amountPaid)||0);
+      return {
+        'Order Number': o.orderNumber || '',
+        'Customer Name': o.customerName || '',
+        'Phone': o.phone || '',
+        'Category': orderCatNames[o.category] || o.category || '',
+        'Order Date': fmtDate(o.orderDate),
+        'Overall Status': o.status || '',
+        'Customisation Needed': o.customisationNeeded || 'No',
+        'Size': o.size || '',
+        'Material': o.material || '',
+        'Model / Design': o.model || '',
+        'Item Description': o.itemDescription || '',
+        'Customer Address': o.address || '',
+        'Cutting Status': o.cuttingStatus || '',
+        'Cutting Done By': o.cuttingBy || '',
+        'Stitching Status': o.stitchingStatus || '',
+        'Stitching Done By': o.stitchingBy || '',
+        'Dispatch Status': o.dispatchStatus || '',
+        'Dispatch / Article Number': o.dispatchArticleNumber || '',
+        'Delivery Date': fmtDate(o.deliveryDate),
+        'Total Amount (Rs.)': Number(o.totalAmount)||0,
+        'Amount Paid (Rs.)': Number(o.amountPaid)||0,
+        'Balance (Rs.)': balance,
+        'Notes': o.notes || '',
+        'Photos Attached': (o.images && o.images.length) ? o.images.length : 0,
+        'Pending Deletion': o.pendingDelete ? `Yes (requested by ${o.pendingDeleteBy||'manager'})` : 'No'
+      };
+    });
+    const ordersSheet = ordersRows.length>0
+      ? XLSX.utils.json_to_sheet(ordersRows)
+      : XLSX.utils.aoa_to_sheet([['No orders logged yet.']]);
+    XLSX.utils.book_append_sheet(wb, ordersSheet, 'Orders');
+
+    /* ---------- MATERIALS SHEET ---------- */
+    const materialsRows = materials.map(m=>({
+      'Item / Material': m.itemName || '',
+      'Supplier': m.supplier || '',
+      'Cost (Rs.)': Number(m.cost)||0,
+      'Purchase Date': fmtDate(m.purchaseDate),
+      'Notes': m.notes || '',
+      'Photos Attached': (m.images && m.images.length) ? m.images.length : 0,
+      'Pending Deletion': m.pendingDelete ? `Yes (requested by ${m.pendingDeleteBy||'manager'})` : 'No'
+    }));
+    const materialsSheet = materialsRows.length>0
+      ? XLSX.utils.json_to_sheet(materialsRows)
+      : XLSX.utils.aoa_to_sheet([['No material purchases logged yet.']]);
+    XLSX.utils.book_append_sheet(wb, materialsSheet, 'Materials');
+
+    /* ---------- EXPENSES SHEET ---------- */
+    const expensesRows = expenses.map(x=>({
+      'Category': x.category || '',
+      'Amount (Rs.)': Number(x.amount)||0,
+      'Date': fmtDate(x.date),
+      'Description': x.description || '',
+      'Pending Deletion': x.pendingDelete ? `Yes (requested by ${x.pendingDeleteBy||'manager'})` : 'No'
+    }));
+    const expensesSheet = expensesRows.length>0
+      ? XLSX.utils.json_to_sheet(expensesRows)
+      : XLSX.utils.aoa_to_sheet([['No expenses logged yet.']]);
+    XLSX.utils.book_append_sheet(wb, expensesSheet, 'Expenses');
+
+    /* ---------- SUMMARY SHEET ---------- */
+    const allTime = computeSummary(null);
+    const thisMonth = computeSummary(isThisMonth);
+    const summaryRows = [
+      ['Dreams In Vogue — Business Summary'],
+      ['Generated on', new Date().toLocaleString('en-IN')],
+      [],
+      ['ALL TIME', ''],
+      ['Orders', allTime.orderCount],
+      ['Order Value (Rs.)', allTime.orderValue],
+      ['Received (Rs.)', allTime.received],
+      ['Pending (Rs.)', allTime.pending],
+      ['Materials Spend (Rs.)', allTime.materialsCost],
+      ['Other Expenses (Rs.)', allTime.expensesCost],
+      ['Net Profit (Rs.)', allTime.profit],
+      [],
+      ['THIS MONTH', ''],
+      ['Orders', thisMonth.orderCount],
+      ['Order Value (Rs.)', thisMonth.orderValue],
+      ['Received (Rs.)', thisMonth.received],
+      ['Pending (Rs.)', thisMonth.pending],
+      ['Materials Spend (Rs.)', thisMonth.materialsCost],
+      ['Other Expenses (Rs.)', thisMonth.expensesCost],
+      ['Net Profit (Rs.)', thisMonth.profit]
+    ];
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+    summarySheet['!cols'] = [{wch:28},{wch:16}];
+    XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+
+    const dateStamp = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `Dreams-In-Vogue-Business-Report-${dateStamp}.xlsx`);
+    showToast("Excel report downloaded.");
+  }catch(err){
+    console.error(err);
+    showToast("Could not generate the report. Try again.");
+  }
+}
+window.exportExcelReport = exportExcelReportFn;
 
 /* ===================== INIT ===================== */
 subscribeProducts();
